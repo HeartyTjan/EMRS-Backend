@@ -37,7 +37,7 @@ The EMRS Backend is a Java-based REST API that handles core functionalities for 
  1. Clone the Repository
 
 ```bash
-  git clone https://github.com/yourusername/emrs-backend.git
+ git clone https://github.com/HeartyTjan/EMRS-Backend.git
   cd emrs-backend
 ```
  2. 2. Set Up the Database
