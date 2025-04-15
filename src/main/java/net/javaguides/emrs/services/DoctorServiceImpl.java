@@ -1,5 +1,6 @@
 package net.javaguides.emrs.services;
 
+import lombok.RequiredArgsConstructor;
 import net.javaguides.emrs.data.model.Doctor;
 import net.javaguides.emrs.data.model.Patient;
 import net.javaguides.emrs.dto.request.CreateNewUserRequest;
@@ -12,16 +13,20 @@ import net.javaguides.emrs.exception.ResourceNotFoundException;
 import net.javaguides.emrs.mapper.DoctorMapper;
 import net.javaguides.emrs.mapper.Mapper;
 import net.javaguides.emrs.repositories.DoctorRepository;
+import net.javaguides.emrs.repositories.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class DoctorServiceImpl implements DoctorService {
-    @Autowired
-    private DoctorRepository doctorRepository;
 
+    private final DoctorRepository doctorRepository;
+    private final PasswordEncoder passwordEncoder;
     @Override
     public UserCreatedResponse createNewDoctor(CreateNewUserRequest request) {
         if(doctorRepository.existsByEmail(request.getEmail())) {
@@ -29,6 +34,8 @@ public class DoctorServiceImpl implements DoctorService {
         }
 
       Doctor newDoctor =  DoctorMapper.mapRequestToDoctor(request);
+        newDoctor.setPassword(passwordEncoder.encode(newDoctor.getPassword()));
+
       doctorRepository.save(newDoctor);
       return Mapper.mapToResponse("Registration Successful");
 

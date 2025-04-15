@@ -14,6 +14,7 @@ import net.javaguides.emrs.services.PatientServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,6 +33,7 @@ public class PatientController {
     }
 
     @PutMapping("/changePassword")
+    @PreAuthorize("hasAnyAuthority('ROLE_PATIENT')")
     public ResponseEntity<Boolean> changePassword(@RequestBody ChangePasswordRequest request) {
         Boolean isChanged = patientServices.changePassword(request);
         return new ResponseEntity<>(isChanged, HttpStatus.OK);

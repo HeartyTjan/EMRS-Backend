@@ -1,5 +1,6 @@
 package net.javaguides.emrs.services;
 
+import lombok.RequiredArgsConstructor;
 import net.javaguides.emrs.data.model.Patient;
 import net.javaguides.emrs.dto.request.ChangePasswordRequest;
 import net.javaguides.emrs.dto.request.CreateNewUserRequest;
@@ -11,15 +12,18 @@ import net.javaguides.emrs.mapper.Mapper;
 import net.javaguides.emrs.mapper.PatientMapper;
 import net.javaguides.emrs.repositories.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class PatientServicesImpl implements PatientServices {
 
-    @Autowired
-    private PatientRepository patientRepository;
+
+    private final PatientRepository patientRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserCreatedResponse createNewPatient(CreateNewUserRequest request) {
@@ -28,6 +32,7 @@ public class PatientServicesImpl implements PatientServices {
         }
 
         Patient newUser = PatientMapper.mapRequestToPatient(request);
+        newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
         patientRepository.save(newUser);
         return Mapper.mapToResponse("Registration Successful");
     }

@@ -23,7 +23,7 @@ public class UserController {
 
     @PostMapping("/register")
     private ResponseEntity<?> createNewUser( @Valid @RequestBody CreateNewUserRequest request){
-        switch (request.getRole()){
+        switch (request.getRole().toLowerCase()){
             case "doctor" -> {
                 return ResponseEntity.ok(doctorService.createNewDoctor(request));
             }
@@ -36,5 +36,7 @@ public class UserController {
         }
 
     }
+
+
 
 }
