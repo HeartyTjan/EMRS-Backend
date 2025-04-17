@@ -33,6 +33,8 @@ public class Doctor implements UserDetails {
     @Column(nullable = false)
     private String password;
 
+    private boolean verified;
+
     private String maritalStatus;
 
     private String role;

@@ -1,9 +1,10 @@
 package net.javaguides.emrs.controller;
 
+import lombok.RequiredArgsConstructor;
 import net.javaguides.emrs.data.model.Doctor;
 import net.javaguides.emrs.dto.request.LoginRequest;
+import net.javaguides.emrs.dto.response.GeneralResponse;
 import net.javaguides.emrs.dto.response.LoginResponse;
-import net.javaguides.emrs.mapper.Mapper;
 import net.javaguides.emrs.services.DoctorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,17 +16,22 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/doctor")
+@RequiredArgsConstructor
 public class DoctorController {
 
-    @Autowired
-    private DoctorService doctorService;
+    private final DoctorService doctorService;
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> doctorLogin(@RequestBody LoginRequest request) {
-        Doctor loggedInDoctor = doctorService.login(request.getEmail(), request.getPassword());
-        LoginResponse response = Mapper.mapToLoginResponse("Login successful",true, loggedInDoctor);
+        LoginResponse response = doctorService.login(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @GetMapping("/verify")
+    public ResponseEntity<GeneralResponse> verifyDoctorAccount(@RequestParam("token") String token) {
+        return ResponseEntity.ok(doctorService.verifyDoctorAccount(token));
+    }
+
 
     @GetMapping("/getDoctors")
     @PreAuthorize("hasAnyAuthority('ROLE_DOCTOR')")

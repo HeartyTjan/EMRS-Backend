@@ -1,4 +1,4 @@
-package net.javaguides.emrs.mapper;
+package net.javaguides.emrs.util.mapper;
 
 import lombok.Getter;
 import lombok.Setter;

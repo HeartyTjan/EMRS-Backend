@@ -5,13 +5,12 @@ import net.javaguides.emrs.data.model.Doctor;
 import net.javaguides.emrs.data.model.Patient;
 import net.javaguides.emrs.dto.request.BookAppointmentRequest;
 import net.javaguides.emrs.dto.request.UpdateAppointmentRequest;
-import net.javaguides.emrs.repositories.AppointmentRepository;
+import net.javaguides.emrs.data.repositories.AppointmentRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import net.javaguides.emrs.services.DoctorService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -30,6 +31,23 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
+
+        String path = request.getRequestURI();
+
+        List<String> publicPaths = List.of(
+                "/auth/register",
+                "/doctor/login",
+                "/doctor/verify",
+                "/patient/login",
+                "/patient/verify",
+                "/favicon.ico"
+        );
+
+        if (publicPaths.stream().anyMatch(path::startsWith)) {
+            log.info("Skipping JWT validation for public endpoint: {}", path);
+            filterChain.doFilter(request, response);
+            return;
+        }
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String userEmail;
@@ -43,6 +61,8 @@ public class JwtFilter extends OncePerRequestFilter {
             UserDetails userModel = this.userDetailsService.loadUserByUsername(userEmail);
 
             if(jwtService.isTokenValid(jwt, userModel)) {
+                var authorities = jwtService.extractAuthorities(jwt);
+                log.info("Authorities from JWT: {}", authorities);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userModel, null, jwtService.extractAuthorities(jwt));
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);

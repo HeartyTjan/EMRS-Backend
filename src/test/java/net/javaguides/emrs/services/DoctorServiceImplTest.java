@@ -1,11 +1,10 @@
 package net.javaguides.emrs.services;
 
-import net.javaguides.emrs.data.model.Doctor;
-import net.javaguides.emrs.dto.request.CreateNewPatientRequest;
 import net.javaguides.emrs.dto.request.CreateNewUserRequest;
+import net.javaguides.emrs.dto.request.LoginRequest;
+import net.javaguides.emrs.dto.response.LoginResponse;
 import net.javaguides.emrs.dto.response.UserCreatedResponse;
-import net.javaguides.emrs.repositories.DoctorRepository;
-import org.junit.jupiter.api.AfterEach;
+import net.javaguides.emrs.data.repositories.DoctorRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,8 +51,12 @@ class DoctorServiceImplTest {
         assertEquals(1, doctorService.numberOfDoctors());
         assertEquals("Registration Successful", response.getMessage());
 
-        Doctor loggedInDoctor = doctorService.login(request.getEmail(), request.getPassword());
-        assertNotNull(loggedInDoctor);
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setEmail("john@gmail.com");
+        loginRequest.setPassword("johndoe");
+
+        LoginResponse loginResponse = doctorService.login(loginRequest);
+        assertNotNull(loginResponse);
 
     }
 }

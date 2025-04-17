@@ -1,30 +1,26 @@
 package net.javaguides.emrs.services;
 
+import lombok.RequiredArgsConstructor;
 import net.javaguides.emrs.data.model.Appointment;
 import net.javaguides.emrs.data.model.Doctor;
 import net.javaguides.emrs.data.model.Patient;
 import net.javaguides.emrs.dto.request.BookAppointmentRequest;
 import net.javaguides.emrs.dto.request.UpdateAppointmentRequest;
 import net.javaguides.emrs.exception.ResourceNotFoundException;
-import net.javaguides.emrs.mapper.AppointmentMapper;
-import net.javaguides.emrs.repositories.AppointmentRepository;
+import net.javaguides.emrs.util.mapper.AppointmentMapper;
+import net.javaguides.emrs.data.repositories.AppointmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class AppointmentServiceImpl implements AppointmentService {
-    @Autowired
-    private AppointmentRepository appointmentRepository;
-
-    @Autowired
-    private DoctorService doctorService;
-
-    @Autowired
-    private PatientServices patientServices;
+    private final AppointmentRepository appointmentRepository;
+    private final DoctorService doctorService;
+    private final PatientServices patientServices;
 
 
     @Override

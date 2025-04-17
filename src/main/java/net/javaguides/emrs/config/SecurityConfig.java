@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/register","doctor/login","patient/login").permitAll()
+                        .requestMatchers("/auth/register","/doctor/login","/patient/login","/patient/verify","/doctor/verify").permitAll()
                         .anyRequest()
                         .hasAnyAuthority("ROLE_PATIENT", "ROLE_DOCTOR")
                 )

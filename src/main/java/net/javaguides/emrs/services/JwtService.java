@@ -81,9 +81,17 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
     public Collection<GrantedAuthority> extractAuthorities(String token) {
+
         Claims claims = extractAllClaims(token);
+        @SuppressWarnings("unchecked")
         List<String> roles = (List<String>) claims.get("role");
+
+        if (roles == null || roles.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         return roles.stream()
+                .filter(Objects::nonNull)
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
     }

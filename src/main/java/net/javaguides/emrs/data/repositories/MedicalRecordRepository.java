@@ -1,4 +1,4 @@
-package net.javaguides.emrs.repositories;
+package net.javaguides.emrs.data.repositories;
 
 import net.javaguides.emrs.data.model.MedicalRecord;
 import org.springframework.data.jpa.repository.JpaRepository;

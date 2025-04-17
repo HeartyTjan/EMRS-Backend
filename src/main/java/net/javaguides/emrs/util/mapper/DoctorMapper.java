@@ -1,4 +1,4 @@
-package net.javaguides.emrs.mapper;
+package net.javaguides.emrs.util.mapper;
 
 
 import net.javaguides.emrs.data.model.Doctor;
@@ -15,6 +15,7 @@ public class DoctorMapper {
         doctor.setEmail(request.getEmail());
         doctor.setGender(request.getGender());
         doctor.setPassword(request.getPassword());
+        doctor.setRole(request.getRole());
         return doctor;
     }
 

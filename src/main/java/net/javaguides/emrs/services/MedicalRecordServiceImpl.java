@@ -1,27 +1,24 @@
 package net.javaguides.emrs.services;
 
+import lombok.RequiredArgsConstructor;
 import net.javaguides.emrs.data.model.Doctor;
 import net.javaguides.emrs.data.model.MedicalRecord;
 import net.javaguides.emrs.data.model.Patient;
 import net.javaguides.emrs.dto.request.AddMedicalRecordRequest;
-import net.javaguides.emrs.mapper.MedicalRecordMapper;
-import net.javaguides.emrs.repositories.MedicalRecordRepository;
+import net.javaguides.emrs.util.mapper.MedicalRecordMapper;
+import net.javaguides.emrs.data.repositories.MedicalRecordRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class MedicalRecordServiceImpl implements MedicalRecordService{
 
-    @Autowired
-    private PatientServices patientService;
-
-    @Autowired
-    private DoctorService doctorService;
-
-    @Autowired
-    private MedicalRecordRepository medicalRecordRepository;
+    private final PatientServices patientService;
+    private final DoctorService doctorService;
+    private final MedicalRecordRepository medicalRecordRepository;
 
     @Override
     public void addMedicalHistory(AddMedicalRecordRequest request) {

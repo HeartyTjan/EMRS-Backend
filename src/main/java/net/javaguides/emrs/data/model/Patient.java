@@ -30,6 +30,8 @@ public class Patient implements UserDetails {
 
     private String gender;
 
+    private boolean verified;
+
     @Column(nullable = false)
     private String password;
 

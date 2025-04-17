@@ -2,24 +2,27 @@ package net.javaguides.emrs.services;
 
 import lombok.RequiredArgsConstructor;
 import net.javaguides.emrs.data.model.Doctor;
-import net.javaguides.emrs.data.model.Patient;
+import net.javaguides.emrs.data.model.DoctorVerificationToken;
 import net.javaguides.emrs.dto.request.CreateNewUserRequest;
 import net.javaguides.emrs.dto.request.LoginRequest;
+import net.javaguides.emrs.dto.response.GeneralResponse;
+import net.javaguides.emrs.dto.response.LoginResponse;
 import net.javaguides.emrs.dto.response.UserCreatedResponse;
-import net.javaguides.emrs.exception.DoctorAlreadyExistException;
-import net.javaguides.emrs.exception.InvalidLoginCredentials;
-import net.javaguides.emrs.exception.PatientAlreadyExistException;
-import net.javaguides.emrs.exception.ResourceNotFoundException;
-import net.javaguides.emrs.mapper.DoctorMapper;
-import net.javaguides.emrs.mapper.Mapper;
-import net.javaguides.emrs.repositories.DoctorRepository;
-import net.javaguides.emrs.repositories.PatientRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import net.javaguides.emrs.exception.*;
+import net.javaguides.emrs.util.mapper.DoctorMapper;
+import net.javaguides.emrs.util.mapper.Mapper;
+import net.javaguides.emrs.data.repositories.DoctorRepository;
+import net.javaguides.emrs.data.repositories.DoctorVerificationTokenRepository;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +30,11 @@ public class DoctorServiceImpl implements DoctorService {
 
     private final DoctorRepository doctorRepository;
     private final PasswordEncoder passwordEncoder;
+    private final DoctorVerificationTokenRepository doctorVerificationTokenRepository;
+    private final JavaMailSenderImpl mailSender;
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
+
     @Override
     public UserCreatedResponse createNewDoctor(CreateNewUserRequest request) {
         if(doctorRepository.existsByEmail(request.getEmail())) {
@@ -35,22 +43,20 @@ public class DoctorServiceImpl implements DoctorService {
 
       Doctor newDoctor =  DoctorMapper.mapRequestToDoctor(request);
         newDoctor.setPassword(passwordEncoder.encode(newDoctor.getPassword()));
-
       doctorRepository.save(newDoctor);
-      return Mapper.mapToResponse("Registration Successful");
+      createVerificationAndSendToken(newDoctor);
+
+      return Mapper.mapToResponse("Check your email to verify account");
 
     }
 
     @Override
-    public Doctor login(String email, String password) {
-       Doctor foundDoctor = findDoctorByEmail(email);
-       boolean isSuccess = foundDoctor.getPassword().equals(password);
-       if(isSuccess) {
-           return foundDoctor;
-       }
-       else{
-           throw new InvalidLoginCredentials("Wrong email or password");
-       }
+    public LoginResponse login(LoginRequest request) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+        var doctor = doctorRepository.findByEmail(request.getEmail())
+                .orElseThrow(()-> new ResourceNotFoundException("User not found"));
+        var jwtToken = jwtService.generateToken(doctor);
+        return Mapper.mapToLoginResponse("Login Successfully", true, jwtToken, doctor);
     }
 
     @Override
@@ -70,9 +76,47 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
 
-    private Doctor findDoctorByEmail(String email) {
-        return doctorRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Doctor not Found" ));
+    private void createVerificationAndSendToken(Doctor doctor){
+        String token = UUID.randomUUID().toString();
+        LocalDateTime expiryDate = LocalDateTime.now().plusMinutes(5);
+
+        DoctorVerificationToken verificationToken = new DoctorVerificationToken(token,doctor,expiryDate);
+        doctorVerificationTokenRepository.save(verificationToken);
+        sendVerificationEmail(doctor.getEmail(), token);
+    }
+
+    private void sendVerificationEmail(String email, String token) {
+        String url = "http://localhost:8080/doctor/verify" + "?token=" + token;
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(email);
+        message.setSubject("Verify your email");
+         message.setText("Click the link to verify your account: " + url);
+
+        mailSender.send(message);
+    }
+
+
+    @Override
+    public GeneralResponse verifyDoctorAccount(String token) {
+        DoctorVerificationToken verificationToken = doctorVerificationTokenRepository.findByToken(token);
+
+        if (verificationToken == null) {
+            throw new InvalidTokenException("Invalid verification token.");
+        }
+
+        if (verificationToken.getExpiryDate().isBefore(LocalDateTime.now())) {
+            throw new InvalidTokenException("Token has expired.");
+        }
+
+        Doctor doctor = verificationToken.getDoctor();
+        doctor.setVerified(true);
+        doctorRepository.save(doctor);
+
+        doctorVerificationTokenRepository.delete(verificationToken);
+
+        var jwtToken = jwtService.generateToken(doctor);
+        return  Mapper.mapToGeneralResponse("Account verified successfully!", jwtToken);
     }
 
 }

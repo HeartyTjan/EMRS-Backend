@@ -1,12 +1,11 @@
 package net.javaguides.emrs.services;
 
-import net.javaguides.emrs.data.model.Doctor;
 import net.javaguides.emrs.data.model.Patient;
 import net.javaguides.emrs.dto.request.ChangePasswordRequest;
-import net.javaguides.emrs.dto.request.CreateNewPatientRequest;
 import net.javaguides.emrs.dto.request.CreateNewUserRequest;
+import net.javaguides.emrs.dto.response.LoginResponse;
 import net.javaguides.emrs.dto.response.UserCreatedResponse;
-import net.javaguides.emrs.repositories.PatientRepository;
+import net.javaguides.emrs.data.repositories.PatientRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,8 +51,8 @@ class PatientServicesImplTest {
         assertEquals(1, patientServices.numberOfPatients());
         assertEquals("Registration Successful", response.getMessage());
 
-        Patient loggedInPatient = patientServices.login(request.getEmail(), request.getPassword());
-        assertNotNull(loggedInPatient);
+        LoginResponse loginResponse = patientServices.login(request.getEmail(), request.getPassword());
+        assertNotNull(loginResponse);
 
     }
 

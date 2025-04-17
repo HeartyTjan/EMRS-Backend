@@ -1,7 +1,7 @@
 package net.javaguides.emrs.services;
 
 import net.javaguides.emrs.dto.request.AddMedicalRecordRequest;
-import net.javaguides.emrs.repositories.MedicalRecordRepository;
+import net.javaguides.emrs.data.repositories.MedicalRecordRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

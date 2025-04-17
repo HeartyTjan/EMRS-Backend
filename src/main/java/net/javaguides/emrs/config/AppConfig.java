@@ -1,9 +1,10 @@
 package net.javaguides.emrs.config;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.javaguides.emrs.exception.ResourceNotFoundException;
-import net.javaguides.emrs.repositories.DoctorRepository;
-import net.javaguides.emrs.repositories.PatientRepository;
+import net.javaguides.emrs.data.repositories.DoctorRepository;
+import net.javaguides.emrs.data.repositories.PatientRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,7 +27,7 @@ public class AppConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return (UserDetailsService) username -> {
+        return username -> {
 
             UserDetails user = patientRepository.findByEmail(username)
                     .orElse(null);
@@ -65,7 +66,7 @@ public class AppConfig {
         return new WebMvcConfigurer() {
 
             @Override
-            public void addCorsMappings(CorsRegistry registry) {
+            public void addCorsMappings(@NonNull CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedOrigins("http://localhost:5173")
                         .allowedMethods("GET", "POST", "PUT", "DELETE")

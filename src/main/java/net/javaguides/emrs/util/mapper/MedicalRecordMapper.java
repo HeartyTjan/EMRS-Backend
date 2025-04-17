@@ -1,4 +1,4 @@
-package net.javaguides.emrs.mapper;
+package net.javaguides.emrs.util.mapper;
 
 import net.javaguides.emrs.data.model.Doctor;
 import net.javaguides.emrs.data.model.MedicalRecord;

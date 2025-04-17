@@ -1,13 +1,12 @@
 package net.javaguides.emrs.controller;
 
-import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import net.javaguides.emrs.data.model.Appointment;
 import net.javaguides.emrs.dto.request.BookAppointmentRequest;
 import net.javaguides.emrs.dto.request.UpdateAppointmentRequest;
 import net.javaguides.emrs.dto.response.AppointmentResponse;
-import net.javaguides.emrs.mapper.AppointmentMapper;
+import net.javaguides.emrs.util.mapper.AppointmentMapper;
 import net.javaguides.emrs.services.AppointmentService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,11 +15,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/appointment")
-
+@RequiredArgsConstructor
 public class AppointmentController {
 
-    @Autowired
-    private AppointmentService appointmentService;
+    private final AppointmentService appointmentService;
 
     @PostMapping("/book")
     private ResponseEntity<AppointmentResponse> bookAppointment(@RequestBody BookAppointmentRequest request) {

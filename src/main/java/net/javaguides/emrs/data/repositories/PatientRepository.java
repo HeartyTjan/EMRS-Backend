@@ -1,4 +1,4 @@
-package net.javaguides.emrs.repositories;
+package net.javaguides.emrs.data.repositories;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
